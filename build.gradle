@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'idea'
 }
 
 version '1.0-SNAPSHOT'
@@ -10,7 +11,24 @@ repositories {
     mavenCentral()
 }
 
+task zipPercolation(type: Zip) {
+    from 'src/main/java/'
+    include 'Percolation*'
+    archiveBaseName = 'percolation-submit'
+    destinationDirectory = file('./build')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+build {
+    dependsOn zipPercolation
+}
+
 dependencies {
-    implementation files('./src/lib/algs4.jar')
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation files('./lib/algs4.jar')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.0'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
 }
