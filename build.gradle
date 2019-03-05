@@ -18,12 +18,22 @@ task zipPercolation(type: Zip) {
     destinationDirectory = file('./build')
 }
 
+task zipQueues(type: Zip) {
+    from 'src/main/java/'
+    include 'Deque.java'
+    include 'Permutation.java'
+    include 'RandomizedQueue.java'
+    archiveBaseName = 'queues-submit'
+    destinationDirectory = file('./build')
+}
+
 test {
     useJUnitPlatform()
 }
 
 build {
     dependsOn zipPercolation
+    dependsOn zipQueues
 }
 
 dependencies {
