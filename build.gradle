@@ -27,6 +27,16 @@ task zipQueues(type: Zip) {
     destinationDirectory = file('./build')
 }
 
+task zipCollinear(type: Zip) {
+    from 'src/main/java/'
+    include 'Point.java'
+    include 'BruteCollinearPoints.java'
+    include 'FastCollinearPoints.java'
+    archiveBaseName = 'collinear-submit'
+    destinationDirectory = file('./build')
+}
+
+
 test {
     useJUnitPlatform()
 }
@@ -34,6 +44,7 @@ test {
 build {
     dependsOn zipPercolation
     dependsOn zipQueues
+    dependsOn zipCollinear
 }
 
 dependencies {
