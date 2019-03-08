@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.StdDraw;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -37,6 +38,7 @@ class PercolationTest {
 
     @ParameterizedTest()
     @MethodSource("getFileDetails")
+    @Disabled
     void testInputFiles(String fname,
                         boolean shouldPercolate,
                         int numOpenSites,
@@ -57,6 +59,7 @@ class PercolationTest {
 
     @ParameterizedTest
     @MethodSource("backwashTestArgs")
+    @Disabled
     void testBackwash(String filename, int size, int sites, int row, int col) {
         Percolation percolation = null;
         try {

@@ -19,6 +19,7 @@ public class FastCollinearPointsTest {
     }
 
     @Test
+    @Disabled
     void testOne() {
         Point[] points = new Point[]{
                 new Point(3, 9),
@@ -47,6 +48,7 @@ public class FastCollinearPointsTest {
 
     @ParameterizedTest
     @MethodSource("makeGrids")
+    @Disabled
     void testBuildGiantGridWithFast(int gridSize, int numPoints) {
         Point[] points = new Point[gridSize * gridSize];
         for (int i = 0; i < points.length; i++) {

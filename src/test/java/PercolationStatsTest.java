@@ -51,6 +51,7 @@ class PercolationStatsTest {
     }
 
     @ParameterizedTest
+    @Disabled
     @MethodSource("percolationStatsMeanArgs")
     void testPercolationStatsMean(int n, int trials, double expectedMeanLow, double expectedMeanHigh) {
         PercolationStats percolationStats = new PercolationStats(n, trials);

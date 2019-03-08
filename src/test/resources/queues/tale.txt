@@ -2168,7 +2168,7 @@ snatched out of the mouth of her only child."
 
 Master Cruncher (who was in his shirt) took this very ill, and,
 turning to his mother, strongly deprecated any praying away of his
-personal board.
+personal oldBoard.
 
 "And what do you suppose, you conceited female," said Mr. Cruncher,
 with unconscious inconsistency, "that the worth of _your_ prayers may be?
@@ -2746,20 +2746,20 @@ to your certain knowledge, before?"
 "When?"
 
 "I was returning from France a few days afterwards, and, at Calais,
-the prisoner came on board the packet-ship in which I returned, and
+the prisoner came on oldBoard the packet-ship in which I returned, and
 made the voyage with me."
 
-"At what hour did he come on board?"
+"At what hour did he come on oldBoard?"
 
 "At a little after midnight."
 
 "In the dead of the night.  Was he the only passenger who came on
-board at that untimely hour?"
+oldBoard at that untimely hour?"
 
 "He happened to be the only one."
 
 "Never mind about `happening,' Mr. Lorry.  He was the only passenger
-who came on board in the dead of the night?"
+who came on oldBoard in the dead of the night?"
 
 "He was."
 
@@ -2796,7 +2796,7 @@ flies was loud again.
 
 "Where?"
 
-"On board of the packet-ship just now referred to, sir, and on the
+"On oldBoard of the packet-ship just now referred to, sir, and on the
 same occasion."
 
 "You are the young lady just now referred to?"
@@ -2815,7 +2815,7 @@ passage across the Channel?"
 "Recall it."
 
 In the midst of a profound stillness, she faintly began:  "When the
-gentleman came on board--"
+gentleman came on oldBoard--"
 
 "Do you mean the prisoner?" inquired the Judge, knitting his brows.
 
@@ -2823,7 +2823,7 @@ gentleman came on board--"
 
 "Then say the prisoner."
 
-"When the prisoner came on board, he noticed that my father," turning
+"When the prisoner came on oldBoard, he noticed that my father," turning
 her eyes lovingly to him as he stood beside her, "was much fatigued
 and in a very weak state of health.  My father was so reduced that I
 was afraid to take him out of the air, and I had made a bed for him
@@ -2837,7 +2837,7 @@ He expressed great gentleness and kindness for my father's state, and
 I am sure he felt it.  That was the manner of our beginning to speak
 together."
 
-"Let me interrupt you for a moment.  Had he come on board alone?"
+"Let me interrupt you for a moment.  Had he come on oldBoard alone?"
 
 "No."
 
@@ -2913,7 +2913,7 @@ lady's father, Doctor Manette.  Who was called accordingly.
 "Once.  When he called at my lodgings in London.  Some three years, or
 three years and a half ago."
 
-"Can you identify him as your fellow-passenger on board the packet,
+"Can you identify him as your fellow-passenger on oldBoard the packet,
 or speak to his conversation with your daughter?"
 
 "Sir, I can do neither."
@@ -6782,7 +6782,7 @@ after daybreak and before sunrise, by the presence of his father in
 the family room.  Something had gone wrong with him; at least, so
 Young Jerry inferred, from the circumstance of his holding
 Mrs. Cruncher by the ears, and knocking the back of her head against
-the head-board of the bed.
+the head-oldBoard of the bed.
 
 "I told you I would," said Mr. Cruncher, "and I did."
 
@@ -16057,7 +16057,7 @@ This etext was created by Judith Boss, Omaha, Nebraska.  The
 equipment: an IBM-compatible 486/50, a Hewlett-Packard ScanJet
 IIc flatbed scanner, and a copy of Calera Recognition Systems'
 M/600 Series Professional OCR software and RISC accelerator
-board donated by Calera.
+oldBoard donated by Calera.
 
 Updated editions will replace the previous one--the old editions
 will be renamed.

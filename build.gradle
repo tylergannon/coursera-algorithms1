@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.21'
 }
 
 version '1.0-SNAPSHOT'
@@ -36,6 +37,14 @@ task zipCollinear(type: Zip) {
     destinationDirectory = file('./build')
 }
 
+task zipPuzzle(type: Zip) {
+    from 'src/main/java/'
+    include 'Board.java'
+    include 'Solver.java'
+    archiveBaseName = 'puzzle-submit'
+    destinationDirectory = file('./build')
+}
+
 
 test {
     useJUnitPlatform()
@@ -45,11 +54,24 @@ build {
     dependsOn zipPercolation
     dependsOn zipQueues
     dependsOn zipCollinear
+    dependsOn zipPuzzle
 }
 
 dependencies {
     implementation files('./lib/algs4.jar')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.0'
+    testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.3.0'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }

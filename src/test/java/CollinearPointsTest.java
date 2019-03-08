@@ -49,6 +49,7 @@ public class CollinearPointsTest {
 
     @ParameterizedTest
     @MethodSource("getPointsArguments")
+    @Disabled
     void testBruteCollinearPoints(String filename, int expectedSegments) {
         try {
             BruteCollinearPoints collinearPoints = new BruteCollinearPoints(
@@ -75,6 +76,7 @@ public class CollinearPointsTest {
 
     @ParameterizedTest
     @MethodSource("getPointsArguments")
+    @Disabled
     void testFastCollinearPoints(String filename, int expectedSegments) {
         try {
             FastCollinearPoints collinearPoints = new FastCollinearPoints(
