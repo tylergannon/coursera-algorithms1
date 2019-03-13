@@ -3,3 +3,15 @@ build
 .gradle
 .idea/workspace.xml
 **/.DS_STORE
+.kotlintest/spec_failures
+src/test/resources/kdtree/input80K.txt
+src/test/resources/kdtree/input800K.txt
+src/test/resources/kdtree/input40K.txt
+src/test/resources/kdtree/input400K.txt
+src/test/resources/kdtree/input1M.txt
+src/test/resources/kdtree/input200K.txt
+src/test/resources/kdtree/input100K.txt
+src/test/resources/kdtree/circle10000.txt
+src/test/resources/kdtree/input10K.txt
+src/test/resources/kdtree/input20K.txt
+src/test/resources/kdtree/logo.png

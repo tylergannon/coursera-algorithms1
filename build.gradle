@@ -45,6 +45,14 @@ task zipPuzzle(type: Zip) {
     destinationDirectory = file('./build')
 }
 
+task zipKdTree(type: Zip) {
+    from 'src/main/java/'
+    include 'PointSET.java'
+    include 'KdTree.java'
+    archiveBaseName = 'kdtree-submit'
+    destinationDirectory = file('./build')
+}
+
 
 test {
     useJUnitPlatform()
@@ -55,6 +63,7 @@ build {
     dependsOn zipQueues
     dependsOn zipCollinear
     dependsOn zipPuzzle
+    dependsOn zipKdTree
 }
 
 dependencies {
