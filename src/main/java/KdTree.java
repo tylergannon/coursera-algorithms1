@@ -5,40 +5,49 @@ import edu.princeton.cs.algs4.StdDraw;
 import java.util.ArrayList;
 import java.util.Comparator;
 
-//import java.awt.*;
-
+/***
+ * Data structure for quickly locating points on a plane.
+ *
+ *
+ */
 public class KdTree {
 
     private Node root = null;
-    private VerticalPointComparator verticalPointComparator;
+    private HorizontalDistanceCalculator horizontalDistanceCalculator;
 
     public KdTree() {
-        verticalPointComparator = new VerticalPointComparator();
-        HorizontalPointComparator horizontalPointComparator = new HorizontalPointComparator();
-        verticalPointComparator.other = horizontalPointComparator;
-        horizontalPointComparator.other = verticalPointComparator;
+        horizontalDistanceCalculator = new HorizontalDistanceCalculator();
+        VerticalDistanceCalculator verticalDistanceCalculator = new VerticalDistanceCalculator();
+        horizontalDistanceCalculator.other = verticalDistanceCalculator;
+        verticalDistanceCalculator.other = horizontalDistanceCalculator;
     }
 
     /****
      *
-     * If X == null return null.
+     * Finds the the point P nearest to a given point X, which is stored on the accumulator object.
      *
-     * For node X and point P
-     * Determine which side of the line P falls on.
-     *      (do this by getting the axial distance Dxp, from X.point to P.
+     * To understand the algorithm here, it's important to note the alternating OneDimensionalCalculator objects,
+     * one of which manipulates distances along the X axis, and the other along the Y axis.
      *
-     * If left/below (negative distance), find the nearest point Nlb on the left (bottom).
-     * If right/above (positive distance), find the nearest point Nrt on the right (top).
+     * The boundingBox is split along the X or Y axis through node.point, according to the comparator, which alternates
+     * at each depth of recursion.
      *
-     * Determine if it's possible for there to be a point on the other side of the line.
-     *      - if N is null, check other side.
-     *      - if axial distance Dxn from X.point to N is less than Dxp, check other side.
+     * Always recurse to the node that's on the same side of the axis through this node as the query point.
+     * If the current shortest-known distance (squared) is farther than the distance (squared) from the
+     * query point to our current axis:
+     *
+     *  * Determine the bounding box for the other node, and recurse to that node if the new bounding box has a corner
+     *      or side that's closer to the query point than the current nearest.
+     *      This makes use of the (perhaps poorly named) method axialDistanceSquared(Point2D, RectHV), which returns
+     *      zero if the query point is between the two horizontal or vertical lines of the bounding box (according
+     *      to which axis is being measured.
+     *
      * @param node Node containing points to check
      * @param accumulator Object for accumulating the nearest point.
      * @param comparator Vertical comparator or horizontal comparator
      * @param boundingBox RectHV representing the possible area that points under @node might fall in.
      */
-    private static void nearest(Node node, NearestPointAccumulator accumulator, DistanceFromAxisAlignedLineComparator comparator, RectHV boundingBox) {
+    private static void nearest(Node node, NearestPointAccumulator accumulator, OneDimensionalCalculator comparator, RectHV boundingBox) {
         if (node == null)
             return;
 
@@ -54,7 +63,10 @@ public class KdTree {
 
             if (accumulator.distanceSquared > axialDistanceSquared) {
                 RectHV newBox = comparator.rightTopBoundingBox(node.point, boundingBox);
-                if (accumulator.distanceSquared > comparator.other().axialDistanceSquared(accumulator.basePoint, newBox) + axialDistanceSquared)
+                double distanceSquaredFromBasePointToBoundingBox =
+                        comparator.other().axialDistanceSquared(accumulator.basePoint, newBox) + axialDistanceSquared;
+
+                if (accumulator.distanceSquared > distanceSquaredFromBasePointToBoundingBox)
                     nearest(node.rightTop, accumulator, comparator.other(), newBox);
             }
 
@@ -63,15 +75,17 @@ public class KdTree {
 
             if (accumulator.distanceSquared > axialDistanceSquared) {
                 RectHV newBox = comparator.leftBottomBoundingBox(node.point, boundingBox);
-                if (accumulator.distanceSquared > comparator.other().axialDistanceSquared(accumulator.basePoint, newBox) + axialDistanceSquared)
-                    nearest(node.leftBottom, accumulator, comparator.other(), newBox);
+                double distanceSquaredFromBasePointToBoundingBox =
+                        comparator.other().axialDistanceSquared(accumulator.basePoint, newBox) + axialDistanceSquared;
 
+                if (accumulator.distanceSquared > distanceSquaredFromBasePointToBoundingBox)
+                    nearest(node.leftBottom, accumulator, comparator.other(), newBox);
             }
         }
 
     }
 
-    private static boolean contains(Node node, Point2D point, DistanceFromAxisAlignedLineComparator comparator) {
+    private static boolean contains(Node node, Point2D point, OneDimensionalCalculator comparator) {
         if (node == null)
             return false;
 
@@ -87,7 +101,6 @@ public class KdTree {
         }
     }
 
-
     private static int size(Node node) {
         if (node == null)
             return 0;
@@ -96,7 +109,11 @@ public class KdTree {
     }
 
     public void draw() {
-        draw(root, new RectHV(0.0, 0.0, 1.0, 1.0), verticalPointComparator);
+        draw(root, new RectHV(0.0, 0.0, 1.0, 1.0), horizontalDistanceCalculator);
+    }
+
+    public int size() {
+        return size(root);
     }
 
     public Iterable<Point2D> range(RectHV rect) {
@@ -104,11 +121,41 @@ public class KdTree {
             throw new IllegalArgumentException();
 
         ArrayList<Point2D> points = new ArrayList<>();
-        buildRange(root, points, rect, verticalPointComparator);
+        buildRange(root, points, rect, horizontalDistanceCalculator);
         return points;
     }
 
-    private void buildRange(Node node, ArrayList<Point2D> points, RectHV rect, DistanceFromAxisAlignedLineComparator comparator) {
+    public Point2D nearest(Point2D point) {
+        if (point == null)
+            throw new IllegalArgumentException();
+
+        if (root == null)
+            return null;
+
+        NearestPointAccumulator accumulator = new NearestPointAccumulator(point);
+
+        nearest(root, accumulator, horizontalDistanceCalculator, new RectHV(0, 0, 1, 1));
+        return accumulator.nearestPoint;
+    }
+
+    public boolean isEmpty() {
+        return size() == 0;
+    }
+
+    public boolean contains(Point2D point) {
+        if (point == null)
+            throw new IllegalArgumentException();
+        return contains(root, point, horizontalDistanceCalculator);
+    }
+
+    public void insert(Point2D point) {
+        if (point == null)
+            throw new IllegalArgumentException();
+
+        root = put(root, point, horizontalDistanceCalculator);
+    }
+
+    private void buildRange(Node node, ArrayList<Point2D> points, RectHV rect, OneDimensionalCalculator comparator) {
         if (node == null)
             return;
 
@@ -125,41 +172,7 @@ public class KdTree {
         }
     }
 
-    public int size() {
-        return size(root);
-    }
-
-    public Point2D nearest(Point2D point) {
-        if (point == null)
-            throw new IllegalArgumentException();
-
-        if (root == null)
-            return null;
-
-        NearestPointAccumulator accumulator = new NearestPointAccumulator(point);
-
-        nearest(root, accumulator, verticalPointComparator, new RectHV(0, 0, 1, 1));
-        return accumulator.nearestPoint;
-    }
-
-    public boolean contains(Point2D point) {
-        if (point == null)
-            throw new IllegalArgumentException();
-        return contains(root, point, verticalPointComparator);
-    }
-
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    public void insert(Point2D point) {
-        if (point == null)
-            throw new IllegalArgumentException();
-
-        root = put(root, point, verticalPointComparator);
-    }
-
-    private Node put(Node node, Point2D point, DistanceFromAxisAlignedLineComparator comparator) {
+    private Node put(Node node, Point2D point, OneDimensionalCalculator comparator) {
         if (node == null)
             return new Node(point);
 
@@ -175,7 +188,7 @@ public class KdTree {
         return node;
     }
 
-    private void draw(Node node, RectHV boundingBox, DistanceFromAxisAlignedLineComparator comparator) {
+    private void draw(Node node, RectHV boundingBox, OneDimensionalCalculator comparator) {
         StdDraw.setPenRadius(0.01);
         StdDraw.setPenColor(StdDraw.BLACK);
         node.point.draw();
@@ -186,8 +199,8 @@ public class KdTree {
             draw(node.rightTop, comparator.rightTopBoundingBox(node.point, boundingBox), comparator.other());
     }
 
-    private interface DistanceFromAxisAlignedLineComparator extends Comparator<Point2D> {
-        DistanceFromAxisAlignedLineComparator other();
+    private interface OneDimensionalCalculator extends Comparator<Point2D> {
+        OneDimensionalCalculator other();
 
         int rectCompare(Point2D point, RectHV rect);
 
@@ -204,43 +217,11 @@ public class KdTree {
         RectHV rightTopBoundingBox(Point2D point, RectHV boundingBox);
     }
 
-    private static class NearestPointAccumulator {
-        Point2D basePoint;
-        Point2D nearestPoint = null;
-        double distanceSquared = Double.MAX_VALUE;
-
-        NearestPointAccumulator(Point2D basePoint) {
-            this.basePoint = basePoint;
-        }
-
-        void tryAndPut(Point2D point) {
-            tryAndPut(point, point.distanceSquaredTo(basePoint));
-        }
-
-        void tryAndPut(Point2D point, double thisDistanceSquared) {
-            if (thisDistanceSquared < distanceSquared) {
-                nearestPoint = point;
-                distanceSquared = thisDistanceSquared;
-            }
-        }
-    }
-
-    private static class Node {
-        int size = 1;
-        Point2D point;
-        Node leftBottom = null;
-        Node rightTop = null;
-
-        Node(Point2D point) {
-            this.point = point;
-        }
-    }
-
-    private static class VerticalPointComparator implements DistanceFromAxisAlignedLineComparator {
-        private DistanceFromAxisAlignedLineComparator other = null;
+    private static class HorizontalDistanceCalculator implements OneDimensionalCalculator {
+        private OneDimensionalCalculator other = null;
 
         @Override
-        public DistanceFromAxisAlignedLineComparator other() {
+        public OneDimensionalCalculator other() {
             return other;
         }
 
@@ -297,8 +278,8 @@ public class KdTree {
         }
     }
 
-    private static class HorizontalPointComparator implements DistanceFromAxisAlignedLineComparator {
-        private DistanceFromAxisAlignedLineComparator other = null;
+    private static class VerticalDistanceCalculator implements OneDimensionalCalculator {
+        private OneDimensionalCalculator other = null;
 
         @Override
         public int compare(Point2D o1, Point2D o2) {
@@ -306,7 +287,7 @@ public class KdTree {
         }
 
         @Override
-        public DistanceFromAxisAlignedLineComparator other() {
+        public OneDimensionalCalculator other() {
             return other;
         }
 
@@ -357,4 +338,37 @@ public class KdTree {
             return new RectHV(boundingBox.xmin(), point.y(), boundingBox.xmax(), boundingBox.ymax());
         }
     }
+
+    private static class NearestPointAccumulator {
+        Point2D basePoint;
+        Point2D nearestPoint = null;
+        double distanceSquared = Double.MAX_VALUE;
+
+        NearestPointAccumulator(Point2D basePoint) {
+            this.basePoint = basePoint;
+        }
+
+        void tryAndPut(Point2D point) {
+            tryAndPut(point, point.distanceSquaredTo(basePoint));
+        }
+
+        void tryAndPut(Point2D point, double thisDistanceSquared) {
+            if (thisDistanceSquared < distanceSquared) {
+                nearestPoint = point;
+                distanceSquared = thisDistanceSquared;
+            }
+        }
+    }
+
+    private static class Node {
+        int size = 1;
+        Point2D point;
+        Node leftBottom = null;
+        Node rightTop = null;
+
+        Node(Point2D point) {
+            this.point = point;
+        }
+    }
+
 }

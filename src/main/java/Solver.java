@@ -4,11 +4,9 @@ import java.util.Comparator;
 import java.util.Deque;
 
 public class Solver {
-    private static final int MAX_ITERATIONS = 100000;
 
     private boolean isSolvable = false;
     private Deque<Board> solution = new java.util.ArrayDeque<>();
-    private int iterations = 0;
 
     public Solver(Board initial) {
         if (initial == null)
@@ -19,19 +17,17 @@ public class Solver {
             solution.push(initial);
             return;
         }
+
         MinPQ<GameNode> myPQ = new MinPQ<>(new ManhattanComparator());
         MinPQ<GameNode> twinPQ = new MinPQ<>(new ManhattanComparator());
 
         myPQ.insert(new GameNode(null, 0, initial.manhattan(), initial));
         Board twin = initial.twin();
         twinPQ.insert(new GameNode(null, 0, twin.manhattan(), twin));
-        int maxQueueSize = 0;
         while (true) {
-            ++iterations;
 
             GameNode node = playTheGame(myPQ, true);
-            if (myPQ.size() > maxQueueSize)
-                maxQueueSize = myPQ.size();
+
             if (node != null) {
                 buildSolution(node);
                 isSolvable = true;
@@ -56,19 +52,10 @@ public class Solver {
         return isSolvable;
     }
 
-    private static int minHamming(Iterable<Board> boards) {
-        int theVal = Integer.MAX_VALUE;
-        int currentVal;
-        for (Board board : boards)
-            if ((currentVal = board.manhattan()) < theVal)
-                theVal = currentVal;
-        return theVal;
-    }
-
     private void buildSolution(GameNode node) {
-        solution.addLast(node.theBoard);
+        solution.addLast(node.board);
         while ((node = node.previous) != null)
-            solution.addFirst(node.theBoard);
+            solution.addFirst(node.board);
     }
 
 //   1 2 0 3  -->  0 2 1 3 , 1 2 3 0
@@ -76,12 +63,12 @@ public class Solver {
     private GameNode playTheGame(MinPQ<GameNode> queue, boolean keepHistory) {
         GameNode node = queue.delMin();
 
-        for (Board board : node.theBoard.neighbors()) {
+        for (Board board : node.board.neighbors()) {
             int manhattan = board.manhattan();
             if (node.previous != null
                     && manhattan == node.previous.manhattan()
-                    && board.hamming() == node.previous.theBoard.hamming()
-                    && board.equals(node.previous.theBoard)) {
+                    && board.hamming() == node.previous.board.hamming()
+                    && board.equals(node.previous.board)) {
                 continue;
             }
 
@@ -118,17 +105,16 @@ public class Solver {
         private static final int MANHATTAN_BITS = BITS * 2;
         private static final int MANHATTAN_PRIORITY_BITS = BITS + MANHATTAN_BITS;
         private static final int MANHATTAN_MASK = 0xFF0000;
-        private static final int HAMMING_MASK = 0xFF00;
         private static final int STEP_MASK = 0xFF;
         private int data;
-        private Board theBoard;
+        private Board board;
         private GameNode previous;
 
         private GameNode(GameNode previous, int stepNumber, int manhattan, Board board) {
             this.previous = previous;
             data = ((manhattan + stepNumber << BITS) + manhattan << (BITS * 2)) + stepNumber;
 
-            theBoard = board;
+            this.board = board;
         }
 
         @Override
@@ -136,7 +122,7 @@ public class Solver {
             if (obj instanceof GameNode) {
                 GameNode other = (GameNode) obj;
                 return other.stepNumber() == stepNumber() && other.manhattan() == manhattan()
-                        && other.theBoard.equals(theBoard);
+                        && other.board.equals(board);
             } else return false;
         }
 
